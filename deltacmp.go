@@ -30,6 +30,12 @@ type Deltacmp struct {
 	fields map[string]field
 }
 
+func difference(a, b float64) float64 {
+	diff := math.Abs(a - b)
+	avg := (a + b) / 2
+	return diff / avg
+}
+
 func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 	diff := make(map[string]string)
 	for name, fa := range a.fields {
@@ -74,10 +80,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
 							}
 						case ModePercent:
-							pa := float64(ta.value)
-							pb := float64(tb.value)
-							if math.Abs((pa-pb)/pa) > 0.01 {
-								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
+							a := float64(ta.value)
+							b := float64(tb.value)
+							if a > 0 || b > 0 {
+								if difference(a, b) > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								}
 							}
 						}
 					}
@@ -93,10 +101,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
 							}
 						case ModePercent:
-							pa := float64(ta.value)
-							pb := float64(tb.value)
-							if math.Abs((pa-pb)/pa) > 0.01 {
-								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
+							a := float64(ta.value)
+							b := float64(tb.value)
+							if a > 0 || b > 0 {
+								if difference(a, b) > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								}
 							}
 						}
 					}
@@ -112,10 +122,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
 							}
 						case ModePercent:
-							pa := ta.value
-							pb := tb.value
-							if math.Abs((pa-pb)/pa) > 0.01 {
-								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
+							a := ta.value
+							b := tb.value
+							if a > 0 || b > 0 {
+								if difference(a, b) > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								}
 							}
 						}
 					}
