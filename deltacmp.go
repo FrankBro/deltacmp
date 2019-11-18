@@ -1,13 +1,30 @@
 package deltacmp
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 type Mode int
 
 const (
 	ModeValue Mode = iota
 	ModeDelta
+	ModePercent
 )
+
+func (mode Mode) String() string {
+	switch mode {
+	case ModeValue:
+		return "value"
+	case ModeDelta:
+		return "delta"
+	case ModePercent:
+		return "percent"
+	default:
+		panic("unknown mode")
+	}
+}
 
 type Deltacmp struct {
 	fields map[string]field
@@ -29,6 +46,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 						}
 					case ModeDelta:
 						panic("cannot do delta diff for boolean")
+					case ModePercent:
+						panic("cannot do percent diff for boolean")
 					}
 				case *fieldString:
 					switch mode {
@@ -40,6 +59,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 						}
 					case ModeDelta:
 						panic("cannot do a delta diff for a string")
+					case ModePercent:
+						panic("cannot do percent diff for boolean")
 					}
 				case *fieldInt:
 					if tb, ok := fb.(*fieldInt); ok {
@@ -51,6 +72,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 						case ModeDelta:
 							if ta.delta != tb.delta {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
+							}
+						case ModePercent:
+							pa := float64(ta.value)
+							pb := float64(tb.value)
+							if math.Abs((pa-pb)/pa) > 0.01 {
+								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
 							}
 						}
 					}
@@ -65,6 +92,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 							if ta.delta != tb.delta {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
 							}
+						case ModePercent:
+							pa := float64(ta.value)
+							pb := float64(tb.value)
+							if math.Abs((pa-pb)/pa) > 0.01 {
+								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
+							}
 						}
 					}
 				case *fieldFloat:
@@ -77,6 +110,12 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 						case ModeDelta:
 							if ta.delta != tb.delta {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
+							}
+						case ModePercent:
+							pa := ta.value
+							pb := tb.value
+							if math.Abs((pa-pb)/pa) > 0.01 {
+								diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.delta, tb.delta)
 							}
 						}
 					}
@@ -91,6 +130,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 							if ta.delta != tb.delta {
 								diff[name] = fmt.Sprintf("%s delta was different. %v vs %v", name, ta.delta, tb.delta)
 							}
+						case ModePercent:
+							panic("cannot do percent diff for complex")
 						}
 					}
 				}
