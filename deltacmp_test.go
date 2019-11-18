@@ -161,3 +161,25 @@ func TestPercent(t *testing.T) {
 	result = Compare(deltacmp1, deltacmp2, modes)
 	require.Len(t, result, len(modes))
 }
+
+func TestZeroAndSamePercent(t *testing.T) {
+	modes := map[string]Mode{
+		"Int": ModePercent,
+	}
+	percent1 := Percent{Int: 0}
+	percent2 := Percent{Int: 0}
+	deltacmp1 := Load(percent1)
+	deltacmp2 := Load(percent2)
+	result := Compare(deltacmp1, deltacmp2, modes)
+	require.Len(t, result, 0)
+	percent1.Int++
+	deltacmp1.Update(percent1)
+	deltacmp2.Update(percent2)
+	result = Compare(deltacmp1, deltacmp2, modes)
+	require.Len(t, result, 1)
+	percent2.Int++
+	deltacmp1.Update(percent1)
+	deltacmp2.Update(percent2)
+	result = Compare(deltacmp1, deltacmp2, modes)
+	require.Len(t, result, 0)
+}
