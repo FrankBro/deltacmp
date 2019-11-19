@@ -83,8 +83,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 							a := float64(ta.value)
 							b := float64(tb.value)
 							if a > 0 || b > 0 {
-								if difference(a, b) > 0.01 {
-									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								if d := difference(a, b); d > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v (%.1f%%)", name, ta.value, tb.value, d*100)
 								}
 							}
 						}
@@ -104,8 +104,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 							a := float64(ta.value)
 							b := float64(tb.value)
 							if a > 0 || b > 0 {
-								if difference(a, b) > 0.01 {
-									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								if d := difference(a, b); d > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v (%.1f%%)", name, ta.value, tb.value, d*100)
 								}
 							}
 						}
@@ -125,8 +125,8 @@ func Compare(a, b *Deltacmp, modes map[string]Mode) map[string]string {
 							a := ta.value
 							b := tb.value
 							if a > 0 || b > 0 {
-								if difference(a, b) > 0.01 {
-									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v", name, ta.value, tb.value)
+								if d := difference(a, b); d > 0.01 {
+									diff[name] = fmt.Sprintf("%s percent was different. %v vs %v (%.1f%%)", name, ta.value, tb.value, d*100)
 								}
 							}
 						}
